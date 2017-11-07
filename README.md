@@ -28,7 +28,7 @@ ansible-playbook playbook.yml -i hosts -K
 
 
 
-### fine print and legal stuff
+### Fine print and legal stuff
 Copyright SURFsara BV  
 Matthew Saum  
 Use at your own risk  
