@@ -10,11 +10,11 @@ If you want to use this operationally, I would review the SQL Database section i
 This is for iRODS 4.1.10 and CentOS 7.3
 It uses iptables, not firewall-cmd.
 
-playbook.yml contains the roles structure
-the hosts file contains variables used to set things up
-common - applied to all. It is basic updates and updates
-icat - the icat server setup tasks
-resc - the resource server setup tasks
+- playbook.yml contains the roles structure
+- the hosts file contains variables used to set things up
+- common - applied to all. It is basic updates and updates
+- icat - the icat server setup tasks
+- resc - the resource server setup tasks
 
 
 
