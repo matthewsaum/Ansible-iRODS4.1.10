@@ -1,4 +1,20 @@
 ---
+- name: Tasks for all hosts
+  hosts: all
+  roles:
+  - common
+
+- name: Tasks for iCAT Servers
+  hosts: icat
+  roles:
+  - icat
+
+- name: Tasks for Resource Servers
+  hosts: resc
+  roles:
+  - resc
+[ansible@cake ~]$ cat roles/common/tasks/main.yml
+---
 #Fixes the server hostname to the variable svrName in the INPUT file
   - name: Hostname Check/change
     hostname: name="{{svrName}}"
