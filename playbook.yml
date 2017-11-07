@@ -1,18 +1,15 @@
 ---
-#our common tasks for every system. 
-  - name:  Role- Common
-    hosts: all
-    roles:
-      - common
-    
-#These are our tasks for setting up an iRODS iCAT server
-  - name: Role- ICAT Server Setup
-    hosts: icat
-    roles:
-      - icat
+- name: Tasks for all hosts
+  hosts: all
+  roles:
+  - common
 
-#These are our tasks for setting up an iRODS Resource Server    
-  - name: Role- iRODS Resource Setup
-    hosts: resc
-    roles:
-      - resc
+- name: Tasks for iCAT Servers
+  hosts: icat
+  roles:
+  - icat
+
+- name: Tasks for Resource Servers
+  hosts: resc
+  roles:
+  - resc
