@@ -1,0 +1,76 @@
+---
+#Fixes the server hostname to the variable svrName in the INPUT file
+  - name: Hostname Check/change
+    hostname: name="{{svrName}}"
+    become: true
+#-------------------------------------------
+#Package Updates and stuff
+#-------------------------------------------
+#Using Yum
+#Installs EPEL
+  - name: EPEL Check, Install, Update
+    yum: name=epel-release state=latest
+    become: true
+#Updates all installs and cache
+  - name: Update All
+    yum: name=* state=latest update_cache=yes
+    become: true
+#Gives me TCPDUMP
+  - name: TCPdump Install
+    yum: name=tcpdump state=latest
+    become: true
+#Pulls Traceroute
+  - name: Traceroute Install
+    yum: name=traceroute state=latest
+    become: true
+#-------------------------------------------
+#IPTables Policy updates and purging
+#-------------------------------------------
+#IPTables default input accept for policy
+  - name: IPtables INPUT accept
+    iptables: chain=INPUT policy=ACCEPT
+    become: true
+#Default forward deny
+  - name: IPTables FORWARD Deny
+    iptables: chain=FORWARD policy=DROP
+    become: true
+#default output accept
+  - name: IPTables OUTPUT accept
+    iptables: chain=OUTPUT policy=ACCEPT
+    become: true
+#Flush current tables
+  - name: IPTables drop tables
+    iptables: flush=yes
+    become: true
+#Permit already existing connections
+  - name: IPTables INPUT established/related acceptance
+    iptables: chain=INPUT ctstate=ESTABLISHED,RELATED jump=ACCEPT
+    become: true
+#permit loopback traffic
+  - name: IPTables All loopback ACCEPTed
+    iptables: chain=INPUT in_interface=lo jump=ACCEPT
+    become: true
+#permit input on tcp22
+  - name: IPTables INPUT 22
+    iptables: chain=INPUT protocol=TCP destination_port=22 jump=ACCEPT
+    become: true
+#permit input on tcp1247
+  - name: IPTables INPUT 1247
+    iptables: chain=INPUT protocol=TCP destination_port=1247 jump=ACCEPT
+    become: true
+#permit input on tcp20000:20199
+  - name: IPTables INPUT 20000:20199
+    iptables: chain=INPUT protocol=TCP destination_port=20000:20199 jump=ACCEPT
+    become: true
+#permint incoming ICMP (ping)
+  - name: IPTables INPUT ICMP
+    iptables: chain=INPUT protocol=ICMP jump=ACCEPT
+    become: true
+#Appent a last slot of deny all other input traffic from external sources.
+  - name: IPTABLES INPUT Default Drop
+    iptables: chain=INPUT jump=DROP
+    become: true
+ #Save the iptables (can't use the "service" module on this one sadly) for Centos
+  - name: IPTables Save
+    command: "/sbin/service iptables save"
+    become: true
