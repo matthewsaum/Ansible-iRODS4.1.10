@@ -20,7 +20,7 @@ It uses iptables, not firewall-cmd.
 - icat - the icat server setup tasks
 - resc - the resource server setup tasks
 
-This command will run the playbook with our provided hosts file, and then it will ask us to enter the SUDO password of our account on the remote machines.
+This command will run the playbook with our provided hosts file, and then it will ask us to enter the SUDO password of our account on the remote machines. NOTE: This should be run from the .../dir/ directory so that the hosts file is local. Otherwise you need to specify absolute paths for the playbook.yml and the hosts file.
 ```
 ansible-playbook playbook.yml -i hosts -K 
 ```
