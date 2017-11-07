@@ -1,0 +1,115 @@
+---
+#Our ICAT Server tasks are here
+#------------------------------
+#These are all PGSQL related tasks
+#------------------------------
+#Installing a postgreSQL server on CentOS
+  - name: Installing postgresql-server
+    yum: name=postgresql-server state=latest
+    become: true
+    when: ansible_pkg_mgr == "yum"
+
+#Installing a postgreSQL python module for ansible interaction
+  - name: Installing python-psycopg2
+    yum: name=python-psycopg2 state=latest
+    become: true
+#See if a PGSQL database exists yet for CentOS
+  - stat: path=/var/lib/pgsql/data/pg_hba.conf
+    register: hba_conf
+    become: true
+#Initialize the database if needed for CentOS
+  - name: Initializing PGSQL database
+    command: "/usr/bin/postgresql-setup initdb"
+    become: true
+    when: hba_conf.stat.exists == False
+#checking to see if the pg_hba.conf is fixed already on CentOS
+  - command: "/bin/grep 'host    all             all             127.0.0.1/32            ident' /var/lib/pgsql/data/pg_hba.conf"
+    become: true
+    register: hba_check
+    ignore_errors: true
+#Fix the pg_hba.conf file to allow localhost password authentication on CentOS
+  - name: Fixing pg_hba.conf to permit localhost password authentication
+    lineinfile: name=/var/lib/pgsql/data/pg_hba.conf regexp="host    all             all             127.0.0.1/32            ident" line="host    all             all             127.0.0.1/32            md5"
+    become: true
+    when: hba_check.stdout != ""
+#start/restart the PGSQL server
+  - name: Starting PGSQL
+    systemd: name=postgresql state=restarted
+    become: true
+#Create irods database (by sudo SUing into the Postgres default account)
+  - name: Becoming postgres account and creating database IRODS
+    become: true
+    become_method: sudo
+    become_user: postgres
+    postgresql_db: name=ICAT
+#Creating the irods PGSQL user and granting privileges
+  - name: Creating irods sql user and granting privileges
+    become: true
+    become_method: sudo
+    become_user: postgres
+    postgresql_user: name="{{svcAcnt}}" password="{{svcAcnt}}" db=ICAT priv=ALL
+#---------------------------------------
+#These are all iRODS related tasks
+#---------------------------------------
+#Installing PIP
+  - name: install pip
+    yum: name=python2-pip state=latest
+    become: true
+#Installing Python Expect plugin
+  - name: install python expect plugin
+    pip: name=pexpect
+    become: true
+#downloading the iRODS iCAT package
+  - name: downloading iRODS ICAT package
+    get_url: url=ftp://ftp.renci.org/pub/irods/releases/4.1.10/centos7/irods-icat-4.1.10-centos7-x86_64.rpm dest=/home/ansible/irods-icat.rpm
+#downloading the iCAT database plugin
+  - name: downloading the ICAT database plugin
+    get_url: url=ftp://ftp.renci.org/pub/irods/releases/4.1.10/centos7/irods-database-plugin-postgres-1.10-centos7-x86_64.rpm dest=/home/ansible/irods-db-plugin.rpm
+#installing the iRODS ICAT
+  - name: Installing the ICAT Package
+    yum: name=/home/ansible/irods-icat.rpm
+    become: true
+#Installing the DB plugin
+  - name: Installing the Database Plugin
+    yum: name=/home/ansible/irods-db-plugin.rpm
+    become: true
+#running the setup_irods.sh with proper inputs, if iRODS is not already configured
+#Notes about this module:
+#It reads left to right, matching strings up to the ":"
+#This means "iRODS service account" matches "iRODS service account name"
+#The ":" separates the line to search for from the response to enter. Response should be quoted.
+#Lines do not need to be in order. As a prompt occurs, it will search the list to find a match.
+#(?i)TEXTGOESHERE before a line will ignore case.
+#So in short:
+#(?i)this is my query, ignoring case \[and escaped properly\] : "THIS IS MY RESPONSE, on the other side of the colon"
+  - name: run iRODS 4.1 setup script
+    become: true
+    expect:
+     command: /bin/sh /var/lib/irods/packaging/setup_irods.sh
+     #Our comment to see if the iRODS Vault exists already. If it does, this script is skipped.
+     creates: "/{{svrName}}Vault"
+     #The series of expected prompts and responses.
+     responses:
+      iRODS service account name \[.*\]: "{{svcAcnt}}"
+      iRODS service group name \[.*\]: "{{svcAcnt}}"
+      iRODS server's zone name \[.*\]: "{{iZone}}"
+      iRODS server's port \[.*\]: "1247"
+      iRODS port range \(begin\) \[.*\]: "20000"
+      iRODS port range \(end\) \[.*\]: "20199"
+      iRODS Vault directory \[.*\]: "/{{svrName}}Vault"
+      iRODS server's zone_key \[.*\]: ""
+      iRODS server's negotiation_key \[.*\]: ""
+      Control Plane port \[.*\]: "1248"
+      Control Plane key \[.*\]: ""
+      Schema Validation Base URI \(or 'off'\) \[.*\]: 'off'
+      iRODS server's administrator username \[.*\]: "{{iAdmin}}"
+      iRODS server's administrator password: "{{iPwd}}"
+      Please confirm these settings \[.*\]: "yes"
+      Database server's hostname or IP address: "127.0.0.1"
+      Database server's port \[.*\]: "5432"
+      Database name \[.*\]: "ICAT"
+      Database username \[.*\]: "{{svcAcnt}}"
+      Database password: "{{svcAcnt}}"
+      # Not needed as this question and response have already been defined:
+      # Please confirm these settings \[.*\]: "yes"
+     echo: yes
