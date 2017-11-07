@@ -1,10 +1,14 @@
 #Matthew's ansible hosts file
 [common]
 #1.1.1.1 svrName=SERVERNAME
-#
+
+
+#-----
 [icat]
 #1.1.1.1 svrName=SERVERNAME svcAcnt=SERVICEACCOUNT iZone=iRODS-Zone iAdmin=iRodsAdmin iPwd=iRodsAdminPwd
 1.1.1.1  svrName=icat1   svcAcnt=irods   iZone=tempZone     iAdmin=rods     iPwd=rods
+
+
+#-----
 [resc]
 #1.1.1.1 svrName=SERVERNAME svcAcnt=SERVICEACCOUNT  rescICAT=1.1.1.2 iZone=iRODS-Zone iAdmin=iRodsAdmin iPwd=iRodsAdminPwd
-[resc]
