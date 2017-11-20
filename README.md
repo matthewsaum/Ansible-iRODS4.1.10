@@ -32,5 +32,6 @@ ansible-playbook playbook.yml -i hosts -K
 Copyright SURFsara BV  
 Matthew Saum  
 Use at your own risk  
-Apache 2.0 License  
+Apache 2.0 License  for any code
+Creative Commons CC-By license for any documentation
 The idea behind these was abused and modified from playbooks created by folks from ALTA/ASTRON (Hanno Holties, Gijs Noorlander, Erwin Platen)
