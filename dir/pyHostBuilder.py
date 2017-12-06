@@ -18,10 +18,7 @@ import sys
 #The common role
 def common():
  ip=raw_input("Please enter your IP address or FQDN: ")
- svr=raw_input("Please enter the server hostname ["+ip+"]: ")
- if (svr == ""):
-  svr = ip
- #if
+ svr=raw_input("Please enter the server hostname ["+ip+"]: ") or ip
  bucket[i] = { 'IP' : str(ip), 'SVR': str(svr) }
 #def common
 
