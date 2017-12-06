@@ -12,7 +12,10 @@
 import os
 import sys
 
-
+#--------------------
+# BEGIN DEFINITIONS
+#--------------------
+#The common role
 def common():
  ip=raw_input("Please enter your IP address or FQDN: ")
  svr=raw_input("Please enter the server hostname ["+ip+"]: ")
@@ -41,6 +44,7 @@ def irsvr():
  #if
 #def irsvr
 
+#The host file writer, filtered by a value set for each role above. ex: IRSVR being 1 or 2 adds to the icat/resc roles
 def mkhosts():
  #Opens our new hosts file
  f= open("pyHosts", "w")
@@ -70,7 +74,9 @@ def mkhosts():
  #for
  f.close()
 #def mkhosts
-
+#-----------------------------
+# END DEFINITIONS
+#-----------------------------
 #Prompts for the playbook name. default is local directory playbook.yml
 pbk=raw_input("Please enter the playbook file [./playbook.yml]: ") or "./playbook.yml"
 
