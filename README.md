@@ -11,6 +11,12 @@ The "hosts" file is our source of information. The variables in place there are 
 I use this for test server creation and dumping. Possibly useful for training environments.
 If you want to use this operationally, I would review the SQL Database section in the ICAT setup. It is not exactly "secure"
 
+## The python script for user prompting
+My python script will create a hosts file called ./pyHosts that is has sensitive fields sanitized.
+It fills in variable fields for you, based on the variables required by different roles.
+
+Naturally, it is currently tailored towards my iRODS install roles.
+
 ## A quick breakdown of the setup
 This is for iRODS 4.1.10 and CentOS 7.3
 It uses iptables, not firewall-cmd.
