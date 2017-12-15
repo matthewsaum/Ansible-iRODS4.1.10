@@ -85,8 +85,10 @@ if(os.path.isfile("pyHosts")):
   sys.exit
 
 #do we need -K on our ansible commands?
-k=raw_input("Do you need a password to run SUDO commands? [Y]/N:") or "-K"
-if (k != "-K") and (k != "Y") and (k != "y"):
+k=raw_input("Do you need a password to run SUDO commands? [Y]/N:") or "Y"
+if (k == "Y") or (k == "y"):
+ k="-K"
+else:
  k=""
  
 #Our host couter, increasing per host added and contination prompt
